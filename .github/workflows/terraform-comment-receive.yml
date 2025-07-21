@@ -60,22 +60,27 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
-            const output = `#### Terraform Format and Style \`${{ steps.fmt.outcome }}\`
-            #### Terraform Initialization \`${{ steps.init.outcome }}\`
-            #### Terraform Validation \`${{ steps.validate.outcome }}\`
-            #### Terraform Plan \`${{ steps.plan.outcome }}\`
-
-            <details><summary>Show Plan</summary>
-
-            \`\`\`hcl
-            ${process.env.PLAN}
-            \`\`\`
-
-            </details>
-
+            function icon(outcome) {
+              return outcome === 'success' ? '✅' : '❌';
+            }
+      
+            const fmt = icon(steps.fmt.outcome);
+            const init = icon(steps.init.outcome);
+            const validate = icon(steps.validate.outcome);
+            const plan = icon(steps.plan.outcome);
+      
+            const output = `#### Terraform Format and Style ${fmt}
+            #### Terraform Initialization ${init}
+            #### Terraform Validation ${validate}
+            #### Terraform Plan ${plan}
+              
+              \`\`\`hcl
+              ${process.env.PLAN}
+              \`\`\`
+      
             *Pusher: @${{ github.actor }}, Workflow: \`${{ github.workflow }}\`*`;
-
-            github.rest.issues.createComment({
+                  
+            await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
