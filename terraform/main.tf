@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "~> 4.37.0"
     }
+    azuread = {
+      source = "hashicorp/azuread"
+      version = "~> 3.4.0"
+    }
   }
 }
 
@@ -18,12 +22,11 @@ resource "azurerm_resource_group" "rg" {
   location = var.location
 }
 
+module "add_user" {
+  source = "./references/azure-security/add_user/"
+  user_principal_name = "john.doe@contoso.com"
+  display_name        = "John Doe"
+  mail_nickname       = "johndoe"
+  password            = "P@ssword123!"
+}
 
-## Example: Call networking module
-#module "networking" {
-#  source         = "./modules/networking"
-#  vnet_name      = var.vnet_name
-#  address_space  = var.address_space
-#  location       = var.location
-#  resource_group = var.resource_group_name
-#}
