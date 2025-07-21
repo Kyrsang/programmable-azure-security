@@ -5,21 +5,12 @@ on:
     types: [created]
 
 jobs:
-  azure-auth:
-    if: startsWith(github.event.comment.body, '#terraform:plan')
-    uses: ./.github/workflows/authenticate-azure.yml
-    secrets:
-      AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
-
   terraform-plan:
-    needs: azure-auth
     if: startsWith(github.event.comment.body, '#terraform:plan')
     runs-on: ubuntu-latest
-
     permissions:
       issues: write
       contents: read
-
     env:
       tf_actions_working_dir: ./terraform
       PLAN: ""
@@ -27,6 +18,11 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
 
       - name: Set up Terraform
         uses: hashicorp/setup-terraform@v3
@@ -37,7 +33,6 @@ jobs:
         id: fmt 
         run: terraform fmt -recursive
         working-directory: ${{ env.tf_actions_working_dir }}
-
 
       - name: Terraform Init
         id: init
