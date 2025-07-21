@@ -1,0 +1,41 @@
+name: Post Terraform Guide Comment
+
+on:
+  issues:
+    types: [opened]
+  pull_request:
+    types: [opened]
+
+jobs:
+  post-guide-comment:
+    runs-on: ubuntu-latest
+
+    permissions:
+      issues: write
+      pull-requests: write
+      contents: read
+
+    steps:
+      - name: Post Terraform usage guide
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const isIssue = !!context.payload.issue;
+            const number = isIssue ? context.issue.number : context.payload.pull_request.number;
+            const message = `💡 *Terraform Workflow Guide*
+
+            To run a Terraform plan, comment:
+              
+              \`\`\`
+              @terraform:plan
+              \`\`\`
+              
+            This will trigger the CI/CD pipeline to run \`terraform plan\` and post the result here.`;
+              
+            github.rest.issues.createComment({
+              issue_number: number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            });

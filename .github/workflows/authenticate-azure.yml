@@ -1,0 +1,17 @@
+name: Authenticate to Azure
+
+on:
+  workflow_call:
+    secrets:
+      AZURE_CREDENTIALS:
+        required: true
+
+jobs:
+  azure-login:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Azure Login
+        uses: azure/login@v1
+        with:
+          creds: ${{ secrets.AZURE_CREDENTIALS }}
