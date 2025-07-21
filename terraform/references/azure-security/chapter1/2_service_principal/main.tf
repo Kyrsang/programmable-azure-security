@@ -5,8 +5,8 @@ resource "azuread_application" "this" {
   owners       = [data.azuread_client_config.this.object_id]
 }
 
-resource "azuread_service_principal" "current" {
+resource "azuread_service_principal" "this" {
   client_id                    = azuread_application.this.client_id
   app_role_assignment_required = false
-  owners                       = [data.azuread_client_config.current.object_id]
+  owners                       = [data.azuread_client_config.this.object_id]
 }
