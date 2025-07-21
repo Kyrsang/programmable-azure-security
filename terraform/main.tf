@@ -17,7 +17,7 @@ provider "azurerm" {
   features {}
 }
 
-resource "azurerm_resource_group" "rg" {
+resource "azurerm_resource_group" "this" {
   name     = var.resource_group_name
   location = var.location
 }
@@ -33,4 +33,11 @@ module "add_user" {
 module "add_service_principal" {
   source = "./references/azure-security/chapter1/2_add_service_principal"
   application_display_name = "myApp"
+}
+
+module "add_managed_identity" {
+  source              = "./references/azure-security/chapter1/3_managed_identity"
+  identity_name       = "example-managed-identity"
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
 }
