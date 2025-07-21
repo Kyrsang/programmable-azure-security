@@ -1,9 +1,9 @@
 variable resource_group_name {
-  type    = "string"
   default = "eunsang-iac"
+  type    = "string"
 }
 
 variable location {
-  type    = "string"
   default = "Korea Central"
+  type    = "string"
 }
