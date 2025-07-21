@@ -6,14 +6,14 @@ on:
 
 jobs:
   azure-auth:
-    if: startsWith(github.event.comment.body, '@terraform:plan')
+    if: startsWith(github.event.comment.body, '#terraform:plan')
     uses: ./.github/workflows/authenticate-azure.yml
     secrets:
       AZURE_CREDENTIALS: ${{ secrets.AZURE_CREDENTIALS }}
 
   terraform-plan:
     needs: azure-auth
-    if: startsWith(github.event.comment.body, '@terraform:plan')
+    if: startsWith(github.event.comment.body, '#terraform:plan')
     runs-on: ubuntu-latest
 
     permissions:

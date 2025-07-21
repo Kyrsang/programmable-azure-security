@@ -28,7 +28,7 @@ jobs:
             To run a Terraform plan, comment:
               
               \`\`\`
-              @terraform:plan
+              #terraform:plan
               \`\`\`
               
             This will trigger the CI/CD pipeline to run \`terraform plan\` and post the result here.`;
