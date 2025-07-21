@@ -59,27 +59,31 @@ jobs:
         uses: actions/github-script@v7
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
+          fmt-outcome: ${{ steps.fmt.outcome }}
+          init-outcome: ${{ steps.init.outcome }}
+          validate-outcome: ${{ steps.validate.outcome }}
+          plan-outcome: ${{ steps.plan.outcome }}
           script: |
             function icon(outcome) {
               return outcome === 'success' ? '✅' : '❌';
             }
-      
-            const fmt = icon(steps.fmt.outcome);
-            const init = icon(steps.init.outcome);
-            const validate = icon(steps.validate.outcome);
-            const plan = icon(steps.plan.outcome);
-      
+            
+            const fmt = icon(process.env.INPUT_FMT_OUTCOME);
+            const init = icon(process.env.INPUT_INIT_OUTCOME);
+            const validate = icon(process.env.INPUT_VALIDATE_OUTCOME);
+            const plan = icon(process.env.INPUT_PLAN_OUTCOME);
+            
             const output = `#### Terraform Format and Style ${fmt}
-            #### Terraform Initialization ${init}
-            #### Terraform Validation ${validate}
-            #### Terraform Plan ${plan}
+              #### Terraform Initialization ${init}
+              #### Terraform Validation ${validate}
+              #### Terraform Plan ${plan}
+                
+                \`\`\`hcl
+                ${process.env.PLAN}
+                \`\`\`
               
-              \`\`\`hcl
-              ${process.env.PLAN}
-              \`\`\`
-      
-            *Pusher: @${{ github.actor }}, Workflow: \`${{ github.workflow }}\`*`;
-                  
+              *Pusher: @${{ github.actor }}, Workflow: \`${{ github.workflow }}\`*`;
+                
             await github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
