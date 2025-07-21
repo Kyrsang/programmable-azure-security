@@ -23,10 +23,14 @@ resource "azurerm_resource_group" "rg" {
 }
 
 module "add_user" {
-  source = "./references/azure-security/add_user/"
+  source = "references/azure-security/chapter1/1_add_user/"
   user_principal_name = "john.doe@contoso.com"
   display_name        = "John Doe"
   mail_nickname       = "johndoe"
   password            = "P@ssword123!"
 }
 
+module "add_service_principal" {
+  source = "references/azure-security/chapter1/2_add_service_principal"
+  application_display_name = "myApp"
+}
