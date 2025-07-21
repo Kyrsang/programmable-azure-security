@@ -22,7 +22,21 @@ resource "azurerm_resource_group" "this" {
   location = var.location
 }
 
-module "add_user" {
+resource "azurerm_virtual_network" "vnet" {
+  name                = "example-vnet"
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
+  address_space       = ["10.0.0.0/16"]
+}
+
+resource "azurerm_subnet" "subnet" {
+  name                 = "example-subnet"
+  resource_group_name  = azurerm_resource_group.this.name
+  virtual_network_name = azurerm_virtual_network.vnet.name
+  address_prefixes     = ["10.0.1.0/24"]
+}
+
+module "user" {
   source = "./references/azure-security/chapter1/1_user/"
   user_principal_name = "john.doe@contoso.com"
   display_name        = "John Doe"
@@ -30,14 +44,31 @@ module "add_user" {
   password            = "P@ssword123!"
 }
 
-module "add_service_principal" {
+module "service_principal" {
   source = "./references/azure-security/chapter1/2_service_principal"
   application_display_name = "myApp"
 }
 
-module "add_managed_identity" {
-  source              = "./references/azure-security/chapter1/3_managed_identity"
+module "managed_identity_user_assigned" {
+  source              = "./references/azure-security/chapter1/3_managed_identity_user_assigned"
   identity_name       = "example-managed-identity"
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
+}
+
+module "managed_identity_system_assigned" {
+  source              = "./references/azure-security/chapter1/3_managed_identity_user_assigned"
+  identity_name       = "example-managed-identity"
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
+}
+
+module "virtual_machine_with_system_assigned_managed_identity" {
+  source              = "./references/azure-security/chapter1/4_managed_identity_system_assigned"
+  vm_name             = "example-vm"
+  resource_group_name = azurerm_resource_group.this.name
+  location            = azurerm_resource_group.this.location
+  vm_spec             = "Standard_DS1_v2"
+  admin_username      = "adminuser"
+  subnet_id           = azurerm_subnet.subnet.id
 }
