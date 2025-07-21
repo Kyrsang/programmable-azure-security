@@ -18,6 +18,12 @@ resource "azurerm_linux_virtual_machine" "this" {
   admin_username        = var.admin_username
   network_interface_ids = [azurerm_network_interface.this.id]
 
+  os_disk {
+    caching              = "ReadWrite"
+    storage_account_type = "Standard_LRS"
+    disk_size_gb         = 30
+  }
+
   admin_ssh_key {
     username   = var.admin_username
     public_key = file("~/.ssh/id_rsa.pub")
