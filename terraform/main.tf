@@ -70,5 +70,6 @@ module "virtual_machine_with_system_assigned_managed_identity" {
   location            = azurerm_resource_group.this.location
   vm_spec             = "Standard_DS1_v2"
   admin_username      = "adminuser"
+  admin_password      = "somePassword1!"
   subnet_id           = azurerm_subnet.subnet.id
 }

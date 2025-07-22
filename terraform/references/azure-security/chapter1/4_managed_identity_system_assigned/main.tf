@@ -16,6 +16,7 @@ resource "azurerm_linux_virtual_machine" "this" {
   location              = var.location
   size                  = var.vm_spec
   admin_username        = var.admin_username
+  admin_password        = var.admin_password
   network_interface_ids = [azurerm_network_interface.this.id]
 
   os_disk {
@@ -24,12 +25,14 @@ resource "azurerm_linux_virtual_machine" "this" {
     disk_size_gb         = 30
   }
 
-  admin_ssh_key {
-    username   = var.admin_username
-    public_key = file("~/.ssh/id_rsa.pub")
-  }
-
   identity {
     type = "SystemAssigned"
+  }
+
+  source_image_reference {
+    publisher = "Canonical"
+    offer     = "0001-com-ubuntu-server-jammy"
+    sku       = "22_04-lts"
+    version   = "latest"
   }
 }
