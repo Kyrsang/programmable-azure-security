@@ -22,17 +22,17 @@ resource "azurerm_resource_group" "this" {
   location = var.location
 }
 
-resource "azurerm_virtual_network" "vnet" {
+resource "azurerm_virtual_network" "this" {
   name                = "example-vnet"
   resource_group_name = azurerm_resource_group.this.name
   location            = azurerm_resource_group.this.location
   address_space       = ["10.0.0.0/16"]
 }
 
-resource "azurerm_subnet" "subnet" {
+resource "azurerm_subnet" "this" {
   name                 = "example-subnet"
   resource_group_name  = azurerm_resource_group.this.name
-  virtual_network_name = azurerm_virtual_network.vnet.name
+  virtual_network_name = azurerm_virtual_network.this.name
   address_prefixes     = ["10.0.1.0/24"]
 }
 
@@ -71,5 +71,12 @@ module "virtual_machine_with_system_assigned_managed_identity" {
   vm_spec             = "Standard_DS1_v2"
   admin_username      = "adminuser"
   admin_password      = "somePassword1!"
-  subnet_id           = azurerm_subnet.subnet.id
+  subnet_id           = azurerm_subnet.this.id
+}
+
+module "role_assignment_on_service_principal" {
+    source            = "./references/azure-security/chapter2/1_built_in_roles"
+    principal_id      = module.service_principal.object_id
+    role_names        = ["Contributor", "User Access Administrator"]
+    scope             = azurerm_resource_group.this.id
 }
